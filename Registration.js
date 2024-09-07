@@ -1,29 +1,46 @@
 const express = require('express');
+const axios = require('axios');
 const bodyParser = require('body-parser');
 const xlsx = require('node-xlsx');
 const fs = require('fs');
 
 
 const app = express();
+const port = 3000;
+
+
+// Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
-//req: is the request object, which contains info about the HTTP request, including any data sent by the client
-// res: This is the response object, which is used to send a response back to the client 
-// set up a POST route at the /save endpoint.
-app.post('/save',(req, res)=> {
+//Route to fetch data from API and write to Excel
+app.post('/fetch-data', async (req, res)=> {
 
-    // retrieves the JSON data sent in the request body.
-    // the body-parse middleware parses the incoming request body and makes the data available under the req.body property.
-    const data = req.body;
+    const{url} = req.body;
 
-    // Create a new worksheet
+    try{
 
-    const worksheet = xlsx.build([{name: 'sheet1', data: data}]);
+        const response = await axios.get(url);
+        const data = response.data;
 
-    // write the worksheet to a file
+        // write data to Excel
+        const Worksheet = xlsx.utils.json_to_sheet(data);
+        const workbook = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(workbook, Worksheet,'sheet1');
+        xlsx.writeFile(workbook, 'Registerd.xlsx');
 
-    fs.writeFileSync('data.xlsx', worksheet);
+        res.send('Data fetched and written to Registerd.xlsx');
+    }
+
+    catch(error){
+        Console.error('Error fetching data:', error);
+        res.status(500).send('Error fetching data');
+    }
 
 
-    res.send('Data saved to Excel file!');
+});
+
+app.listen(port, () => {
+
+    console.log('server running at http://localhost:${port}');
+
 });
