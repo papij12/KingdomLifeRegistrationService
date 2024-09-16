@@ -1,7 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const bodyParser = require('body-parser');
-const xlsx = require('node-xlsx');
+const xlsx = require('node-xlsx').default;
 const fs = require('fs');
 
 
@@ -15,22 +15,27 @@ app.use(bodyParser.json());
 //Route to fetch data from API and write to Excel
 app.post('/Register', async (req, res)=> {
 
-
-   
-  const{url} = req.body;
+     const{url} = req.body;
 
      try{
 
-        const response = await axios.get(url);
+        //Append the API key to the URL
+
+        const apiKey = 'MY_API_KEY';
+        const fullurl = `${url}&appid=${apiKey}`;
+
+        const response = await axios.get(fullurl);
         const data = response.data;
 
-       
+     
         //write data to Excel
         const Worksheet = xlsx.utils.json_to_sheet(data);
         const workbook = xlsx.utils.book_new();
         xlsx.utils.book_append_sheet(workbook, Worksheet,'sheet1');
         xlsx.writeFile(workbook, 'Registerd.xlsx');
-            res.status(200).send('Data fetched successfully');
+
+
+        res.status(200).send('Data fetched successfully');
              
         }
 
