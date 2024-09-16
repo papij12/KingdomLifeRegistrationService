@@ -13,29 +13,31 @@ const port = 3000;
 app.use(bodyParser.json());
 
 //Route to fetch data from API and write to Excel
-app.post('/fetch-data', async (req, res)=> {
+app.post('/Register', async (req, res)=> {
 
-    const{url} = req.body;
 
-    try{
+   
+  const{url} = req.body;
+
+     try{
 
         const response = await axios.get(url);
         const data = response.data;
 
-        // write data to Excel
+       
+        //write data to Excel
         const Worksheet = xlsx.utils.json_to_sheet(data);
         const workbook = xlsx.utils.book_new();
         xlsx.utils.book_append_sheet(workbook, Worksheet,'sheet1');
         xlsx.writeFile(workbook, 'Registerd.xlsx');
+            res.status(200).send('Data fetched successfully');
+             
+        }
 
-        res.send('Data fetched and written to Registerd.xlsx');
-    }
-
-    catch(error){
-        Console.error('Error fetching data:', error);
-        res.status(500).send('Error fetching data');
-    }
-
+    catch(error){   
+         console.error('Error fetching data:', error);
+         res.status(500).send('Error fetching data');
+     }
 
 });
 
@@ -44,3 +46,5 @@ app.listen(port, () => {
     console.log('server running at http://localhost:${port}');
 
 });
+
+module.exports = app;
