@@ -24,9 +24,9 @@ describe("POST /Register", () => {
         
     })
 
-    describe("when the user does not provide a complete filled form", () => {
+    describe("when the user does not provide a incomplete form", () => {
 
-            // should respond with a 4xx status code for bad request. 
+            // should respond with a 5xx status code for bad request. 
     })
 
 });

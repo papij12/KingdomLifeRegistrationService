@@ -1,7 +1,8 @@
 const express = require('express');
 const axios = require('axios');
 const bodyParser = require('body-parser');
-const xlsx = require('node-xlsx').default;
+//const xlsx = require('node-xlsx').default;
+const xlsx = require('xlsx');
 const fs = require('fs');
 
 
@@ -16,12 +17,16 @@ app.use(bodyParser.json());
 app.post('/Register', async (req, res)=> {
 
      const{url} = req.body;
+     
+     if (!url) {
+        return res.status(400).send('Bad Request: URL is required');
+    }
 
      try{
 
         //Append the API key to the URL
 
-        const apiKey = 'MY_API_KEY';
+        const apiKey = '0ea39f1ee474ee7eb4df5d87c5fbf8e0';
         const fullurl = `${url}&appid=${apiKey}`;
 
         const response = await axios.get(fullurl);
@@ -29,10 +34,10 @@ app.post('/Register', async (req, res)=> {
 
      
         //write data to Excel
-        const Worksheet = xlsx.utils.json_to_sheet(data);
+        const Worksheet = xlsx.utils.json_to_sheet([data]);
         const workbook = xlsx.utils.book_new();
         xlsx.utils.book_append_sheet(workbook, Worksheet,'sheet1');
-        xlsx.writeFile(workbook, 'Registerd.xlsx');
+        xlsx.writeFile(workbook, 'Registered.xlsx');
 
 
         res.status(200).send('Data fetched successfully');
